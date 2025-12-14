@@ -104,7 +104,7 @@ function UIResourceRenderer({
         borderRadius: 12,
         background: 'white'
       }}
-      sandbox="allow-scripts allow-forms"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
       title={resource._meta?.title || 'UI Resource'}
       onLoad={() => {
         // Auto-resize iframe to content
@@ -217,26 +217,33 @@ function App() {
           justifyContent: 'center',
           marginBottom: 24
         }}>
-          {(Object.keys(mockUIResources) as MockResourceKey[]).map((key) => (
-            <button
-              key={key}
-              onClick={() => setSelectedResource(key)}
-              style={{
-                padding: '8px 16px',
-                border: selectedResource === key ? '2px solid #6366f1' : '2px solid transparent',
-                borderRadius: 8,
-                background: selectedResource === key ? '#eef2ff' : 'white',
-                color: selectedResource === key ? '#6366f1' : '#475569',
-                fontWeight: selectedResource === key ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: 14,
-                textTransform: 'capitalize',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              {key}
-            </button>
-          ))}
+          {(Object.keys(mockUIResources) as MockResourceKey[]).map((key) => {
+            const isSelected = selectedResource === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Selector clicked:', key);
+                  setSelectedResource(key);
+                }}
+                style={{
+                  padding: '8px 16px',
+                  border: isSelected ? '2px solid #6366f1' : '2px solid #e2e8f0',
+                  borderRadius: 8,
+                  background: isSelected ? '#eef2ff' : 'white',
+                  color: isSelected ? '#6366f1' : '#475569',
+                  fontWeight: isSelected ? 600 : 400,
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {key}
+              </button>
+            );
+          })}
         </div>
 
         {/* Main Content Grid */}
@@ -382,8 +389,12 @@ function App() {
 // Mount the app
 const container = document.getElementById('root');
 if (container) {
+  console.log('MCP-UI Playground: Mounting React app...');
   const root = createRoot(container);
   root.render(<App />);
+  console.log('MCP-UI Playground: App mounted successfully!');
+} else {
+  console.error('MCP-UI Playground: Could not find root element!');
 }
 
 export default App;
