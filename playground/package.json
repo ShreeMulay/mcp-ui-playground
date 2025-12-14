@@ -4,10 +4,10 @@
   "description": "Minimal MCP-UI playground with mock UIResources",
   "type": "module",
   "scripts": {
-    "dev": "bun --hot serve.ts",
+    "dev": "bun serve.ts",
+    "dev:watch": "bun --watch serve.ts",
     "build": "bun build ./app.tsx --outdir ./dist --minify",
-    "preview": "bun run build && bun serve.ts",
-    "static": "open index.html"
+    "start": "PORT=4567 bun serve.ts"
   },
   "dependencies": {
     "@mcp-ui/client": "^5.17.1",

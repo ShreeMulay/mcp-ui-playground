@@ -1,56 +1,88 @@
 /**
  * Bun development server for MCP-UI Playground
  * 
- * Serves the playground with hot reloading support
- * Run with: bun --hot serve.ts
+ * Serves the playground with on-the-fly bundling
+ * Run with: bun serve.ts
+ * 
+ * Change port with: PORT=4000 bun serve.ts
  */
 
+const PORT = parseInt(process.env.PORT || '4567');
+
+// Build the app first
+console.log('Building playground...');
+
+const buildResult = await Bun.build({
+  entrypoints: ['./app.tsx'],
+  outdir: './dist',
+  target: 'browser',
+  format: 'esm',
+  minify: false,
+  sourcemap: 'inline',
+  external: [], // Bundle everything
+});
+
+if (!buildResult.success) {
+  console.error('Build failed:');
+  for (const log of buildResult.logs) {
+    console.error(log);
+  }
+  process.exit(1);
+}
+
+console.log('Build complete!');
+
+// Read the built file
+const builtJS = await Bun.file('./dist/app.js').text();
+
+// Create the HTML with inlined JS
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP-UI Playground</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #root {
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+${builtJS}
+  </script>
+</body>
+</html>`;
+
 const server = Bun.serve({
-  port: 3000,
+  port: PORT,
   async fetch(request) {
     const url = new URL(request.url);
-    let path = url.pathname;
     
-    // Serve index.html for root
-    if (path === '/') {
-      path = '/index.html';
-    }
-    
-    // Try to serve the file
-    const filePath = `.${path}`;
-    const file = Bun.file(filePath);
-    
-    if (await file.exists()) {
-      // Set appropriate content type
-      let contentType = 'text/plain';
-      if (path.endsWith('.html')) contentType = 'text/html';
-      else if (path.endsWith('.css')) contentType = 'text/css';
-      else if (path.endsWith('.js')) contentType = 'application/javascript';
-      else if (path.endsWith('.tsx') || path.endsWith('.ts')) {
-        // Transpile TypeScript/TSX on the fly
-        const transpiler = new Bun.Transpiler({
-          loader: path.endsWith('.tsx') ? 'tsx' : 'ts',
-        });
-        const source = await file.text();
-        const result = transpiler.transformSync(source);
-        return new Response(result, {
-          headers: { 
-            'Content-Type': 'application/javascript',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      }
-      else if (path.endsWith('.json')) contentType = 'application/json';
-      
-      return new Response(file, {
-        headers: { 
-          'Content-Type': contentType,
-          'Access-Control-Allow-Origin': '*'
-        }
+    // Serve the app
+    if (url.pathname === '/' || url.pathname === '/index.html') {
+      return new Response(html, {
+        headers: { 'Content-Type': 'text/html' }
       });
     }
     
-    // 404 for not found
+    // Serve built JS if requested directly
+    if (url.pathname === '/app.js' || url.pathname === '/dist/app.js') {
+      return new Response(builtJS, {
+        headers: { 'Content-Type': 'application/javascript' }
+      });
+    }
+    
     return new Response('Not Found', { status: 404 });
   },
 });
