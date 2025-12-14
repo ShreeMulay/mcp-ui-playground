@@ -1,13 +1,11 @@
 {
   "name": "@mcp-ui-playground/playground",
   "version": "1.0.0",
-  "description": "Minimal MCP-UI playground with mock UIResources",
   "type": "module",
   "scripts": {
-    "dev": "bun serve.ts",
-    "dev:watch": "bun --watch serve.ts",
-    "build": "bun build ./app.tsx --outdir ./dist --minify",
-    "start": "PORT=4567 bun serve.ts"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@mcp-ui/client": "^5.17.1",
@@ -17,7 +15,9 @@
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "bun-types": "^1.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vite": "^5.1.0"
   }
 }
