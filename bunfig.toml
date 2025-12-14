@@ -1,0 +1,10 @@
+# Bun configuration for MCP-UI Playground
+# Requires Bun >= 1.0.0
+
+[install]
+# Use exact versions for reproducibility
+exact = true
+
+[run]
+# Enable hot reloading by default
+bun = true

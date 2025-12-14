@@ -1,0 +1,41 @@
+{
+  "name": "mcp-ui-playground",
+  "version": "1.0.0",
+  "description": "MCP-UI Learning Playground - Interactive examples for building UI components in AI chat applications",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "playground",
+    "server",
+    "client",
+    "examples/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "dev:playground": "bun run --cwd playground dev",
+    "dev:server": "bun run --cwd server dev",
+    "dev:client": "bun run --cwd client dev",
+    "build": "bun run --filter '*' build",
+    "clean": "rm -rf node_modules */node_modules */*/node_modules bun.lock",
+    "typecheck": "bun run --filter '*' typecheck"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShreeMulay/mcp-ui-playground.git"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-ui",
+    "model-context-protocol",
+    "ai",
+    "chat",
+    "interactive-ui",
+    "learning",
+    "playground"
+  ],
+  "author": "ShreeMulay",
+  "license": "MIT"
+}
